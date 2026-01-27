@@ -1,0 +1,331 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "open": "Open",
+    "yes": "Yes",
+    "no": "No",
+    "success": "Success",
+    "welcome": "Welcome",
+    "verified": "Verified",
+    "notProvided": "Not provided",
+    "customer": "Customer",
+    "server": "Server",
+    "manager": "Manager",
+    "admin": "Admin",
+    "superadmin": "Super Admin",
+    "pushNotifications": "Push Notifications",
+    "pushNotificationsDesc": "Receive notifications in your browser",
+    "smsNotifications": "SMS Notifications",
+    "smsNotificationsDesc": "Receive order updates via SMS",
+    "emailMarketing": "Email Marketing",
+    "emailMarketingDesc": "Receive promotions and news via email",
+    "summary": "Your activity summary",
+    "totalOrders": "Total Orders",
+    "totalSpent": "Total Spent",
+    "avgOrder": "Avg. Order"
+  },
+  "auth": {
+    "login": "Log In",
+    "logout": "Log Out",
+    "register": "Register",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "displayName": "Display Name",
+    "phone": "Phone Number",
+    "forgotPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signInWithGoogle": "Sign in with Google",
+    "createAccount": "Create Account",
+    "resetPassword": "Reset Password",
+    "sendResetLink": "Send Reset Link",
+    "resetLinkSent": "Password reset link sent to your email",
+    "passwordMismatch": "Passwords do not match",
+    "emailRequired": "Email is required",
+    "passwordRequired": "Password is required",
+    "invalidCredentials": "Invalid email or password",
+    "accountCreated": "Account created successfully",
+    "verifyEmail": "Please verify your email address"
+  },
+  "navigation": {
+    "home": "Home",
+    "menu": "Menu",
+    "orders": "Orders",
+    "reservations": "Reservations",
+    "account": "Account",
+    "settings": "Settings",
+    "admin": "Admin",
+    "dashboard": "Dashboard",
+    "staff": "Staff"
+  },
+  "menu": {
+    "title": "Menu",
+    "categories": "Categories",
+    "allItems": "All Items",
+    "searchPlaceholder": "Search menu...",
+    "noResults": "No items found",
+    "filters": {
+      "vegetarian": "Vegetarian",
+      "vegan": "Vegan",
+      "glutenFree": "Gluten-Free",
+      "dairyFree": "Dairy-Free"
+    },
+    "item": {
+      "addToOrder": "Add to Order",
+      "customize": "Customize",
+      "ingredients": "Ingredients",
+      "allergens": "Allergens",
+      "calories": "Calories",
+      "prepTime": "Prep Time",
+      "prepTimeMinutes": "{minutes} min",
+      "unavailable": "Currently Unavailable",
+      "soldOut": "Sold Out",
+      "quantity": "Quantity",
+      "specialInstructions": "Special Instructions",
+      "specialInstructionsPlaceholder": "Any special requests?"
+    }
+  },
+  "order": {
+    "title": "Your Orders",
+    "history": "View your order history",
+    "empty": "No orders yet",
+    "emptyDescription": "Start ordering from our menu to see your orders here",
+    "startOrdering": "Start ordering",
+    "subtotal": "Subtotal",
+    "tax": "Tax",
+    "tip": "Tip",
+    "total": "Total",
+    "checkout": "Checkout",
+    "addMore": "Add More Items",
+    "specialInstructions": "Special Instructions",
+    "item": {
+      "quantity": "Qty",
+      "remove": "Remove",
+      "modify": "Modify"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "preparing": "Preparing",
+      "ready": "Ready",
+      "served": "Served",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    }
+  },
+  "ai": {
+    "title": "AI Assistant",
+    "greeting": "Hi! I'm your AI assistant. How can I help you today?",
+    "placeholder": "Type your message or tap the mic to speak...",
+    "listening": "Listening...",
+    "thinking": "Thinking...",
+    "speaking": "Speaking...",
+    "voiceButton": "Tap to speak",
+    "stopListening": "Stop listening",
+    "suggestions": {
+      "seeMenu": "Show me the menu",
+      "recommend": "What do you recommend?",
+      "orderStatus": "What's in my order?",
+      "callServer": "I need a server"
+    },
+    "errors": {
+      "microphoneAccess": "Unable to access microphone",
+      "connectionFailed": "Connection failed. Please try again.",
+      "processingError": "Error processing your request"
+    }
+  },
+  "checkout": {
+    "title": "Checkout",
+    "paymentMethod": "Payment Method",
+    "tipAmount": "Tip Amount",
+    "customTip": "Custom Tip",
+    "noTip": "No Tip",
+    "placeOrder": "Place Order",
+    "processing": "Processing...",
+    "success": "Order Placed!",
+    "thankYou": "Thank you for your order!",
+    "orderNumber": "Order Number",
+    "estimatedTime": "Estimated Time"
+  },
+  "reservation": {
+    "title": "Reservations",
+    "manage": "Manage your reservations",
+    "new": "New Reservation",
+    "newDescription": "Book a table at our restaurant",
+    "date": "Date",
+    "time": "Time",
+    "partySize": "Party Size",
+    "guests": "Guests",
+    "guestCount": "{count, plural, =1 {1 guest} other {# guests}}",
+    "name": "Name",
+    "phone": "Phone",
+    "email": "Email",
+    "specialRequests": "Special Requests",
+    "specialRequestsPlaceholder": "Any special requests or dietary requirements?",
+    "occasion": "Occasion",
+    "occasions": {
+      "birthday": "Birthday",
+      "anniversary": "Anniversary",
+      "business": "Business",
+      "dateNight": "Date Night",
+      "celebration": "Celebration",
+      "other": "Other"
+    },
+    "book": "Book Reservation",
+    "cancel": "Cancel Reservation",
+    "success": "Reservation created successfully",
+    "cancelled": "Reservation cancelled",
+    "upcoming": "Upcoming Reservations",
+    "past": "Past Reservations",
+    "noUpcoming": "No upcoming reservations",
+    "confirmation": "Reservation Confirmed!",
+    "confirmationMessage": "You will receive a confirmation via SMS",
+    "confirmationNumber": "Confirmation Number",
+    "noAvailability": "No availability for selected date/time"
+  },
+  "table": {
+    "scanQR": "Scan QR Code",
+    "scanInstructions": "Scan the QR code on your table to start ordering",
+    "tableNumber": "Table {number}",
+    "startSession": "Start Session",
+    "endSession": "End Session",
+    "callServer": "Call Server",
+    "serverCalled": "A server has been notified",
+    "serverOnWay": "A server is on the way!"
+  },
+  "account": {
+    "title": "My Account",
+    "profile": "Profile",
+    "orderHistory": "Order History",
+    "reservationHistory": "Reservation History",
+    "preferences": "Preferences",
+    "language": "Language",
+    "theme": "Theme",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    },
+    "notifications": "Notifications",
+    "marketing": "Marketing Communications",
+    "dietary": "Dietary Preferences",
+    "savePreferences": "Save Preferences",
+    "preferencesSaved": "Preferences saved successfully"
+  },
+  "admin": {
+    "dashboard": "Dashboard",
+    "restaurants": "Restaurants",
+    "createRestaurant": "Create Restaurant",
+    "menuManagement": "Menu Management",
+    "categories": "Categories",
+    "items": "Menu Items",
+    "tables": "Tables",
+    "qrCodes": "QR Codes",
+    "staff": "Staff",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "aiSettings": "AI Settings"
+  },
+  "staff": {
+    "dashboard": "Staff Dashboard",
+    "orderQueue": "Order Queue",
+    "tableStatus": "Table Status",
+    "reservations": "Reservations",
+    "needsAttention": "Needs Attention",
+    "markReady": "Mark Ready",
+    "markServed": "Mark Served"
+  },
+  "errors": {
+    "notFound": "Page not found",
+    "unauthorized": "Unauthorized access",
+    "serverError": "Server error",
+    "networkError": "Network error. Please check your connection.",
+    "tryAgain": "Something went wrong. Please try again."
+  },
+  "home": {
+    "heroTitle": "Transform Your Restaurant with",
+    "heroTitleHighlight": "AI-Powered",
+    "heroTitleEnd": "Ordering",
+    "heroDescription": "Let customers order through voice and chat AI assistants. Manage menus, reservations, and staff all in one place.",
+    "getStarted": "Get Started",
+    "startFreeTrial": "Start Free Trial",
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "myAccount": "My Account",
+    "goToDashboard": "Go to Dashboard",
+    "adminPanel": "Admin Panel",
+    "staffPanel": "Staff Panel",
+    "featuresTitle": "Everything You Need to Modernize Your Restaurant",
+    "features": {
+      "aiChat": {
+        "title": "AI Chat Assistant",
+        "description": "Customers can chat with an AI waitress to browse menus, get recommendations, and place orders."
+      },
+      "voice": {
+        "title": "Voice Ordering",
+        "description": "Natural voice interactions powered by ElevenLabs for hands-free ordering experience."
+      },
+      "qrCode": {
+        "title": "QR Code Access",
+        "description": "Customers scan a QR code at their table to instantly access the AI ordering system."
+      },
+      "menu": {
+        "title": "Smart Menu Management",
+        "description": "Easily manage menus with images, ingredients, allergens, and real-time availability."
+      },
+      "reservations": {
+        "title": "AI Reservations",
+        "description": "Let AI handle reservation inquiries via chat, SMS, or voice calls with Twilio integration."
+      },
+      "analytics": {
+        "title": "Analytics Dashboard",
+        "description": "Track orders, popular items, peak hours, and customer preferences with detailed analytics."
+      }
+    },
+    "howItWorksTitle": "How It Works",
+    "howItWorks": {
+      "step1": {
+        "title": "Set Up Your Restaurant",
+        "description": "Create your account, add your restaurant details, upload your menu with images, and configure your AI assistant's personality."
+      },
+      "step2": {
+        "title": "Generate QR Codes for Tables",
+        "description": "Create unique QR codes for each table. When customers scan, they instantly connect to your AI assistant."
+      },
+      "step3": {
+        "title": "Customers Order via AI",
+        "description": "Customers chat or speak with the AI assistant to browse the menu, get recommendations, and place orders. The AI handles modifications and upselling naturally."
+      },
+      "step4": {
+        "title": "Staff Fulfills Orders",
+        "description": "Orders appear in real-time on the staff dashboard. Kitchen and servers see order status, table numbers, and special requests instantly."
+      }
+    },
+    "ctaTitle": "Ready to Transform Your Restaurant?",
+    "ctaDescription": "Join restaurants already using AI to improve customer experience and streamline operations.",
+    "getStartedFree": "Get Started Free",
+    "footer": {
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "contact": "Contact",
+      "poweredBy": "Powered by Gemini & ElevenLabs"
+    }
+  }
+}

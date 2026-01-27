@@ -1,0 +1,331 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ocurrio un error",
+    "retry": "Intentar de nuevo",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "add": "Agregar",
+    "remove": "Quitar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sort": "Ordenar",
+    "back": "Atras",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "yes": "Si",
+    "no": "No",
+    "success": "Exito",
+    "welcome": "Bienvenido",
+    "verified": "Verificado",
+    "notProvided": "No proporcionado",
+    "customer": "Cliente",
+    "server": "Mesero",
+    "manager": "Gerente",
+    "admin": "Administrador",
+    "superadmin": "Super Admin",
+    "pushNotifications": "Notificaciones Push",
+    "pushNotificationsDesc": "Recibe notificaciones en tu navegador",
+    "smsNotifications": "Notificaciones SMS",
+    "smsNotificationsDesc": "Recibe actualizaciones de pedidos por SMS",
+    "emailMarketing": "Marketing por Email",
+    "emailMarketingDesc": "Recibe promociones y noticias por correo",
+    "summary": "Resumen de tu actividad",
+    "totalOrders": "Total de Pedidos",
+    "totalSpent": "Total Gastado",
+    "avgOrder": "Pedido Prom."
+  },
+  "auth": {
+    "login": "Iniciar Sesion",
+    "logout": "Cerrar Sesion",
+    "register": "Registrarse",
+    "email": "Correo electronico",
+    "password": "Contrasena",
+    "confirmPassword": "Confirmar Contrasena",
+    "displayName": "Nombre",
+    "phone": "Numero de Telefono",
+    "forgotPassword": "Olvidaste tu contrasena?",
+    "noAccount": "No tienes cuenta?",
+    "hasAccount": "Ya tienes cuenta?",
+    "signInWithGoogle": "Iniciar sesion con Google",
+    "createAccount": "Crear Cuenta",
+    "resetPassword": "Restablecer Contrasena",
+    "sendResetLink": "Enviar enlace",
+    "resetLinkSent": "Se envio un enlace a tu correo",
+    "passwordMismatch": "Las contrasenas no coinciden",
+    "emailRequired": "El correo es requerido",
+    "passwordRequired": "La contrasena es requerida",
+    "invalidCredentials": "Correo o contrasena invalidos",
+    "accountCreated": "Cuenta creada exitosamente",
+    "verifyEmail": "Por favor verifica tu correo electronico"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "menu": "Menu",
+    "orders": "Pedidos",
+    "reservations": "Reservaciones",
+    "account": "Cuenta",
+    "settings": "Configuracion",
+    "admin": "Admin",
+    "dashboard": "Panel",
+    "staff": "Personal"
+  },
+  "menu": {
+    "title": "Menu",
+    "categories": "Categorias",
+    "allItems": "Todos los articulos",
+    "searchPlaceholder": "Buscar en el menu...",
+    "noResults": "No se encontraron articulos",
+    "filters": {
+      "vegetarian": "Vegetariano",
+      "vegan": "Vegano",
+      "glutenFree": "Sin Gluten",
+      "dairyFree": "Sin Lacteos"
+    },
+    "item": {
+      "addToOrder": "Agregar al pedido",
+      "customize": "Personalizar",
+      "ingredients": "Ingredientes",
+      "allergens": "Alergenos",
+      "calories": "Calorias",
+      "prepTime": "Tiempo de preparacion",
+      "prepTimeMinutes": "{minutes} min",
+      "unavailable": "No disponible actualmente",
+      "soldOut": "Agotado",
+      "quantity": "Cantidad",
+      "specialInstructions": "Instrucciones especiales",
+      "specialInstructionsPlaceholder": "Alguna solicitud especial?"
+    }
+  },
+  "order": {
+    "title": "Tus Pedidos",
+    "history": "Ver tu historial de pedidos",
+    "empty": "Sin pedidos aun",
+    "emptyDescription": "Empieza a ordenar del menu para ver tus pedidos aqui",
+    "startOrdering": "Empieza a ordenar",
+    "subtotal": "Subtotal",
+    "tax": "Impuesto",
+    "tip": "Propina",
+    "total": "Total",
+    "checkout": "Pagar",
+    "addMore": "Agregar mas articulos",
+    "specialInstructions": "Instrucciones especiales",
+    "item": {
+      "quantity": "Cant",
+      "remove": "Quitar",
+      "modify": "Modificar"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "confirmed": "Confirmado",
+      "preparing": "Preparando",
+      "ready": "Listo",
+      "served": "Servido",
+      "paid": "Pagado",
+      "cancelled": "Cancelado"
+    }
+  },
+  "ai": {
+    "title": "Asistente IA",
+    "greeting": "Hola! Soy tu asistente de IA. Como puedo ayudarte hoy?",
+    "placeholder": "Escribe tu mensaje o toca el microfono para hablar...",
+    "listening": "Escuchando...",
+    "thinking": "Pensando...",
+    "speaking": "Hablando...",
+    "voiceButton": "Toca para hablar",
+    "stopListening": "Dejar de escuchar",
+    "suggestions": {
+      "seeMenu": "Muestrame el menu",
+      "recommend": "Que me recomiendas?",
+      "orderStatus": "Que tengo en mi pedido?",
+      "callServer": "Necesito un mesero"
+    },
+    "errors": {
+      "microphoneAccess": "No se pudo acceder al microfono",
+      "connectionFailed": "Conexion fallida. Por favor intenta de nuevo.",
+      "processingError": "Error procesando tu solicitud"
+    }
+  },
+  "checkout": {
+    "title": "Pagar",
+    "paymentMethod": "Metodo de pago",
+    "tipAmount": "Cantidad de propina",
+    "customTip": "Propina personalizada",
+    "noTip": "Sin propina",
+    "placeOrder": "Realizar pedido",
+    "processing": "Procesando...",
+    "success": "Pedido realizado!",
+    "thankYou": "Gracias por tu pedido!",
+    "orderNumber": "Numero de pedido",
+    "estimatedTime": "Tiempo estimado"
+  },
+  "reservation": {
+    "title": "Reservaciones",
+    "manage": "Administra tus reservaciones",
+    "new": "Nueva Reservacion",
+    "newDescription": "Reserva una mesa en nuestro restaurante",
+    "date": "Fecha",
+    "time": "Hora",
+    "partySize": "Tamano del grupo",
+    "guests": "Invitados",
+    "guestCount": "{count, plural, =1 {1 invitado} other {# invitados}}",
+    "name": "Nombre",
+    "phone": "Telefono",
+    "email": "Correo electronico",
+    "specialRequests": "Solicitudes especiales",
+    "specialRequestsPlaceholder": "Alguna solicitud especial o requisitos dieteticos?",
+    "occasion": "Ocasion",
+    "occasions": {
+      "birthday": "Cumpleanos",
+      "anniversary": "Aniversario",
+      "business": "Negocios",
+      "dateNight": "Cita romantica",
+      "celebration": "Celebracion",
+      "other": "Otro"
+    },
+    "book": "Reservar",
+    "cancel": "Cancelar Reservacion",
+    "success": "Reservacion creada exitosamente",
+    "cancelled": "Reservacion cancelada",
+    "upcoming": "Proximas Reservaciones",
+    "past": "Reservaciones Pasadas",
+    "noUpcoming": "No hay reservaciones proximas",
+    "confirmation": "Reservacion Confirmada!",
+    "confirmationMessage": "Recibiras una confirmacion por SMS",
+    "confirmationNumber": "Numero de confirmacion",
+    "noAvailability": "No hay disponibilidad para la fecha/hora seleccionada"
+  },
+  "table": {
+    "scanQR": "Escanear Codigo QR",
+    "scanInstructions": "Escanea el codigo QR en tu mesa para empezar a ordenar",
+    "tableNumber": "Mesa {number}",
+    "startSession": "Iniciar Sesion",
+    "endSession": "Terminar Sesion",
+    "callServer": "Llamar Mesero",
+    "serverCalled": "Se ha notificado a un mesero",
+    "serverOnWay": "Un mesero va en camino!"
+  },
+  "account": {
+    "title": "Mi Cuenta",
+    "profile": "Perfil",
+    "orderHistory": "Historial de Pedidos",
+    "reservationHistory": "Historial de Reservaciones",
+    "preferences": "Preferencias",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themes": {
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    },
+    "notifications": "Notificaciones",
+    "marketing": "Comunicaciones de Marketing",
+    "dietary": "Preferencias Dieteticas",
+    "savePreferences": "Guardar Preferencias",
+    "preferencesSaved": "Preferencias guardadas exitosamente"
+  },
+  "admin": {
+    "dashboard": "Panel de Control",
+    "restaurants": "Restaurantes",
+    "createRestaurant": "Crear Restaurante",
+    "menuManagement": "Gestion de Menu",
+    "categories": "Categorias",
+    "items": "Articulos del Menu",
+    "tables": "Mesas",
+    "qrCodes": "Codigos QR",
+    "staff": "Personal",
+    "analytics": "Analiticas",
+    "settings": "Configuracion",
+    "aiSettings": "Configuracion de IA"
+  },
+  "staff": {
+    "dashboard": "Panel del Personal",
+    "orderQueue": "Cola de Pedidos",
+    "tableStatus": "Estado de Mesas",
+    "reservations": "Reservaciones",
+    "needsAttention": "Necesita Atencion",
+    "markReady": "Marcar Listo",
+    "markServed": "Marcar Servido"
+  },
+  "errors": {
+    "notFound": "Pagina no encontrada",
+    "unauthorized": "Acceso no autorizado",
+    "serverError": "Error del servidor",
+    "networkError": "Error de red. Por favor verifica tu conexion.",
+    "tryAgain": "Algo salio mal. Por favor intenta de nuevo."
+  },
+  "home": {
+    "heroTitle": "Transforma Tu Restaurante con",
+    "heroTitleHighlight": "Pedidos con IA",
+    "heroTitleEnd": "",
+    "heroDescription": "Permite que los clientes ordenen a traves de asistentes de voz e IA. Gestiona menus, reservaciones y personal en un solo lugar.",
+    "getStarted": "Comenzar",
+    "startFreeTrial": "Prueba Gratis",
+    "signIn": "Iniciar Sesion",
+    "signOut": "Cerrar Sesion",
+    "myAccount": "Mi Cuenta",
+    "goToDashboard": "Ir al Panel",
+    "adminPanel": "Panel Admin",
+    "staffPanel": "Panel Personal",
+    "featuresTitle": "Todo lo que Necesitas para Modernizar tu Restaurante",
+    "features": {
+      "aiChat": {
+        "title": "Asistente de Chat IA",
+        "description": "Los clientes pueden chatear con un asistente IA para ver menus, obtener recomendaciones y hacer pedidos."
+      },
+      "voice": {
+        "title": "Pedidos por Voz",
+        "description": "Interacciones de voz naturales con ElevenLabs para una experiencia de pedido manos libres."
+      },
+      "qrCode": {
+        "title": "Acceso por Codigo QR",
+        "description": "Los clientes escanean un codigo QR en su mesa para acceder instantaneamente al sistema de pedidos IA."
+      },
+      "menu": {
+        "title": "Gestion Inteligente de Menu",
+        "description": "Gestiona facilmente menus con imagenes, ingredientes, alergenos y disponibilidad en tiempo real."
+      },
+      "reservations": {
+        "title": "Reservaciones con IA",
+        "description": "Deja que la IA maneje consultas de reservaciones via chat, SMS o llamadas con integracion Twilio."
+      },
+      "analytics": {
+        "title": "Panel de Analiticas",
+        "description": "Rastrea pedidos, articulos populares, horas pico y preferencias de clientes con analiticas detalladas."
+      }
+    },
+    "howItWorksTitle": "Como Funciona",
+    "howItWorks": {
+      "step1": {
+        "title": "Configura tu Restaurante",
+        "description": "Crea tu cuenta, agrega los detalles de tu restaurante, sube tu menu con imagenes y configura la personalidad de tu asistente IA."
+      },
+      "step2": {
+        "title": "Genera Codigos QR para las Mesas",
+        "description": "Crea codigos QR unicos para cada mesa. Cuando los clientes escanean, se conectan instantaneamente con tu asistente IA."
+      },
+      "step3": {
+        "title": "Los Clientes Ordenan via IA",
+        "description": "Los clientes chatean o hablan con el asistente IA para ver el menu, obtener recomendaciones y hacer pedidos. La IA maneja modificaciones y ventas adicionales naturalmente."
+      },
+      "step4": {
+        "title": "El Personal Cumple los Pedidos",
+        "description": "Los pedidos aparecen en tiempo real en el panel del personal. Cocina y meseros ven el estado del pedido, numeros de mesa y solicitudes especiales al instante."
+      }
+    },
+    "ctaTitle": "Listo para Transformar tu Restaurante?",
+    "ctaDescription": "Unete a restaurantes que ya usan IA para mejorar la experiencia del cliente y optimizar operaciones.",
+    "getStartedFree": "Comenzar Gratis",
+    "footer": {
+      "terms": "Terminos",
+      "privacy": "Privacidad",
+      "contact": "Contacto",
+      "poweredBy": "Impulsado por Gemini y ElevenLabs"
+    }
+  }
+}
