@@ -362,7 +362,22 @@ export function AIChat({
                   </div>
                 ) : (
                   <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                    <ReactMarkdown
+                      components={{
+                        img: ({ src, alt, ...props }) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={src}
+                            alt={alt || ''}
+                            className="rounded-lg max-w-[200px] w-full h-auto my-2 shadow-sm border"
+                            loading="lazy"
+                            {...props}
+                          />
+                        ),
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>

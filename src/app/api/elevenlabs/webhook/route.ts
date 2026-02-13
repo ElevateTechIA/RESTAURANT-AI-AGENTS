@@ -76,6 +76,7 @@ async function handleGetMenu(params: { restaurantId: string; categoryId?: string
         available: item.availability?.isAvailable ?? true,
         allergens: item.allergens || [],
         dietaryFlags: item.dietaryFlags || [],
+        imageUrl: item.imageUrl || null,
       })),
     };
   } catch (error) {

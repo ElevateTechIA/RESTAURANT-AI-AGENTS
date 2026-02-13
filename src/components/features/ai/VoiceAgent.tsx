@@ -6,6 +6,7 @@ import { useConversation } from '@elevenlabs/react';
 import { Mic, MicOff, Phone, PhoneOff, Volume2, VolumeX, Loader2, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { MenuItemCard, MenuItemDisplay } from './MenuItemCard';
 
 interface VoiceAgentProps {
   restaurantId: string;
@@ -65,6 +66,8 @@ export function VoiceAgent({
   const [isConfigured, setIsConfigured] = useState(true);
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
+  const [menuItems, setMenuItems] = useState<Map<string, MenuItemDisplay>>(new Map());
+  const [displayedItems, setDisplayedItems] = useState<MenuItemDisplay[]>([]);
 
   // Client tools for the voice agent to trigger UI updates
   const clientTools: Record<string, (parameters: any) => Promise<string>> = {
@@ -75,9 +78,24 @@ export function VoiceAgent({
       return 'Order updated successfully';
     },
     show_menu_item: async ({ itemId }: { itemId: string }): Promise<string> => {
-      // Trigger navigation or modal to show item
       console.log('Show menu item:', itemId);
-      return 'Showing menu item';
+      const item = menuItems.get(itemId);
+      if (item) {
+        setDisplayedItems((prev) => {
+          if (prev.some((i) => i.id === item.id)) return prev;
+          return [...prev, item];
+        });
+        return `Showing ${item.name} on screen`;
+      }
+      return 'Item not found in menu';
+    },
+    show_menu: async (): Promise<string> => {
+      const allItems = Array.from(menuItems.values());
+      if (allItems.length > 0) {
+        setDisplayedItems(allItems);
+        return `Showing ${allItems.length} menu items on screen`;
+      }
+      return 'Menu not loaded yet';
     },
     navigate_to: async ({ page }: { page: string }): Promise<string> => {
       console.log('Navigate to:', page);
@@ -166,6 +184,7 @@ export function VoiceAgent({
     if (url) {
       try {
         setTranscript([]);
+        setDisplayedItems([]);
         await conversation.startSession({ signedUrl: url });
       } catch (err: any) {
         setError(err.message || 'Failed to start conversation');
@@ -195,6 +214,33 @@ export function VoiceAgent({
     setIsMuted((prev) => !prev);
     // Note: ElevenLabs SDK may have its own mute functionality
   }, []);
+
+  // Fetch menu items on mount for displaying images
+  useEffect(() => {
+    async function fetchMenu() {
+      try {
+        const response = await fetch(`/api/menu?restaurantId=${restaurantId}&availableOnly=true`);
+        if (response.ok) {
+          const data = await response.json();
+          const itemMap = new Map<string, MenuItemDisplay>();
+          for (const item of data.items) {
+            itemMap.set(item.id, {
+              id: item.id,
+              name: item.name[language] || item.name.en,
+              description: item.description[language] || item.description.en,
+              price: item.price,
+              imageUrl: item.imageUrl,
+              dietaryFlags: item.dietaryFlags,
+            });
+          }
+          setMenuItems(itemMap);
+        }
+      } catch (err) {
+        console.error('Failed to fetch menu for voice display:', err);
+      }
+    }
+    fetchMenu();
+  }, [restaurantId, language]);
 
   // Check if ElevenLabs is configured on mount
   useEffect(() => {
@@ -339,6 +385,32 @@ export function VoiceAgent({
               }}
             />
           ))}
+        </div>
+      )}
+
+      {/* Menu Items Display */}
+      {displayedItems.length > 0 && (
+        <div className="w-full max-w-md max-h-64 overflow-y-auto border rounded-lg p-3 bg-background">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-muted-foreground font-medium">
+              {language === 'es' ? 'Menu' : 'Menu'}
+            </p>
+            <button
+              onClick={() => setDisplayedItems([])}
+              className="text-xs text-muted-foreground hover:text-foreground"
+            >
+              {language === 'es' ? 'Cerrar' : 'Close'}
+            </button>
+          </div>
+          <div className="space-y-2">
+            {displayedItems.map((item) => (
+              <MenuItemCard
+                key={item.id}
+                item={item}
+                compact={displayedItems.length > 3}
+              />
+            ))}
+          </div>
         </div>
       )}
 
