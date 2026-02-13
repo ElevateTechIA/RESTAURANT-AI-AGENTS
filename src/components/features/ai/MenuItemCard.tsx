@@ -31,10 +31,13 @@ export function MenuItemCard({ item, compact = false, className }: MenuItemCardP
           src={item.imageUrl}
           alt={item.name}
           className={cn(
-            'rounded-md object-cover flex-shrink-0',
+            'rounded-md object-cover flex-shrink-0 bg-muted',
             compact ? 'w-12 h-12' : 'w-20 h-20'
           )}
           loading="lazy"
+          decoding="async"
+          width={compact ? 48 : 80}
+          height={compact ? 48 : 80}
         />
       ) : (
         <div className={cn(
