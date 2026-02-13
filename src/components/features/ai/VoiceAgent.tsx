@@ -122,15 +122,31 @@ export function VoiceAgent({
     onMessage: (message: any) => {
       console.log('Voice message:', message);
       if (message.message) {
+        const role = message.role === 'user' ? 'user' : 'agent';
         setTranscript((prev) => [
           ...prev,
           {
-            id: `${message.role || 'agent'}-${Date.now()}-${Math.random()}`,
-            role: message.role === 'user' ? 'user' : 'agent',
+            id: `${role}-${Date.now()}-${Math.random()}`,
+            role,
             content: message.message,
             timestamp: new Date(),
           },
         ]);
+
+        // Auto-show menu when agent talks about menu items
+        if (role === 'agent') {
+          const text = message.message.toLowerCase();
+          const menuKeywords = [
+            'menu', 'menú', 'platos', 'dishes', 'carta',
+            'tenemos', 'ofrecemos', 'opciones', 'categoría',
+            'entradas', 'starters', 'principales', 'main',
+            'postres', 'desserts', 'bebidas', 'beverages', 'drinks',
+          ];
+          const mentionsMenu = menuKeywords.some((kw) => text.includes(kw));
+          if (mentionsMenu && menuItems.size > 0 && displayedItems.length === 0) {
+            setDisplayedItems(Array.from(menuItems.values()));
+          }
+        }
       }
     },
     onError: (error) => {
@@ -390,16 +406,16 @@ export function VoiceAgent({
 
       {/* Menu Items Display */}
       {displayedItems.length > 0 && (
-        <div className="w-full max-w-md max-h-64 overflow-y-auto border rounded-lg p-3 bg-background">
-          <div className="flex items-center justify-between mb-2">
+        <div className="w-full max-w-md max-h-80 overflow-y-auto border rounded-lg p-3 bg-background">
+          <div className="flex items-center justify-between mb-2 sticky top-0 bg-background pb-1">
             <p className="text-xs text-muted-foreground font-medium">
-              {language === 'es' ? 'Menu' : 'Menu'}
+              {language === 'es' ? `Menu (${displayedItems.length} items)` : `Menu (${displayedItems.length} items)`}
             </p>
             <button
               onClick={() => setDisplayedItems([])}
-              className="text-xs text-muted-foreground hover:text-foreground"
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              {language === 'es' ? 'Cerrar' : 'Close'}
+              ✕
             </button>
           </div>
           <div className="space-y-2">
@@ -407,7 +423,6 @@ export function VoiceAgent({
               <MenuItemCard
                 key={item.id}
                 item={item}
-                compact={displayedItems.length > 3}
               />
             ))}
           </div>
