@@ -6,9 +6,24 @@ let adminApp: App;
 let adminAuth: Auth;
 let adminDb: Firestore;
 
+function parsePrivateKey(key: string | undefined): string | undefined {
+  if (!key) return undefined;
+
+  // Try JSON.parse first (handles keys stored as JSON strings with quotes)
+  try {
+    const parsed = JSON.parse(key);
+    if (typeof parsed === 'string') return parsed;
+  } catch {
+    // Not a JSON string, continue
+  }
+
+  // Replace literal \n with actual newlines
+  return key.replace(/\\n/g, '\n');
+}
+
 function initializeFirebaseAdmin() {
   if (getApps().length === 0) {
-    const privateKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY?.replace(/\\n/g, '\n');
+    const privateKey = parsePrivateKey(process.env.FIREBASE_ADMIN_PRIVATE_KEY);
 
     if (!privateKey || !process.env.FIREBASE_ADMIN_CLIENT_EMAIL || !process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
       throw new Error('Firebase Admin credentials not configured');
