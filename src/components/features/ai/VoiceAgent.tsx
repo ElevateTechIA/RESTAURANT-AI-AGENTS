@@ -146,6 +146,26 @@ export function VoiceAgent({
           if (mentionsMenu && menuItems.size > 0 && displayedItems.length === 0) {
             setDisplayedItems(Array.from(menuItems.values()));
           }
+
+          // Auto-detect checkout/payment intent and redirect
+          const checkoutKeywords = [
+            'proceed to checkout', 'proceder al pago', 'pagar', 'payment',
+            'checkout', 'complete your order', 'completar tu pedido',
+            'finalizar', 'confirmar pedido', 'confirm your order',
+            'te redirijo', 'redirect', 'proceso de pago',
+            'listo para pagar', 'ready to pay',
+          ];
+          const mentionsCheckout = checkoutKeywords.some((kw) => text.includes(kw));
+          if (mentionsCheckout) {
+            setTimeout(async () => {
+              try {
+                await conversation.endSession();
+              } catch {
+                // ignore
+              }
+              router.push('/checkout');
+            }, 2000);
+          }
         }
       }
     },
