@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useConversation } from '@elevenlabs/react';
-import { Mic, MicOff, Phone, PhoneOff, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Phone, PhoneOff, Volume2, VolumeX, Loader2, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -14,6 +15,20 @@ interface VoiceAgentProps {
   onOrderUpdate?: (action: string, item: any) => void;
   className?: string;
 }
+
+interface TranscriptMessage {
+  id: string;
+  role: 'user' | 'agent';
+  content: string;
+  timestamp: Date;
+}
+
+const PAGE_ROUTES: Record<string, string> = {
+  menu: '/menu',
+  order: '/orders',
+  checkout: '/checkout',
+  assistance: '/menu',
+};
 
 const STATUS_TEXT = {
   en: {
@@ -42,11 +57,14 @@ export function VoiceAgent({
   onOrderUpdate,
   className,
 }: VoiceAgentProps) {
+  const router = useRouter();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(true);
+  const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
+  const transcriptEndRef = useRef<HTMLDivElement>(null);
 
   // Client tools for the voice agent to trigger UI updates
   const clientTools: Record<string, (parameters: any) => Promise<string>> = {
@@ -62,9 +80,15 @@ export function VoiceAgent({
       return 'Showing menu item';
     },
     navigate_to: async ({ page }: { page: string }): Promise<string> => {
-      // Trigger navigation
       console.log('Navigate to:', page);
-      return 'Navigating to ' + page;
+      const route = PAGE_ROUTES[page];
+      if (route) {
+        setTimeout(() => {
+          router.push(route);
+        }, 1500);
+        return 'Navigating to ' + page;
+      }
+      return 'Unknown page: ' + page;
     },
   };
 
@@ -77,8 +101,19 @@ export function VoiceAgent({
     onDisconnect: () => {
       console.log('Voice agent disconnected');
     },
-    onMessage: (message) => {
+    onMessage: (message: any) => {
       console.log('Voice message:', message);
+      if (message.message) {
+        setTranscript((prev) => [
+          ...prev,
+          {
+            id: `${message.role || 'agent'}-${Date.now()}-${Math.random()}`,
+            role: message.role === 'user' ? 'user' : 'agent',
+            content: message.message,
+            timestamp: new Date(),
+          },
+        ]);
+      }
     },
     onError: (error) => {
       console.error('Voice agent error:', error);
@@ -130,6 +165,7 @@ export function VoiceAgent({
 
     if (url) {
       try {
+        setTranscript([]);
         await conversation.startSession({ signedUrl: url });
       } catch (err: any) {
         setError(err.message || 'Failed to start conversation');
@@ -183,6 +219,11 @@ export function VoiceAgent({
 
     checkConfiguration();
   }, [restaurantId, tableId, sessionId, language]);
+
+  // Auto-scroll transcript
+  useEffect(() => {
+    transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [transcript]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -301,8 +342,50 @@ export function VoiceAgent({
         </div>
       )}
 
+      {/* Conversation Transcript */}
+      {transcript.length > 0 && (
+        <div className="w-full max-w-md max-h-64 overflow-y-auto border rounded-lg p-3 bg-background">
+          <p className="text-xs text-muted-foreground mb-2 font-medium">
+            {language === 'es' ? 'Conversacion' : 'Conversation'}
+          </p>
+          <div className="space-y-3">
+            {transcript.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  'flex gap-2',
+                  msg.role === 'user' ? 'justify-end' : 'justify-start'
+                )}
+              >
+                {msg.role === 'agent' && (
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    'max-w-[80%] rounded-lg px-3 py-1.5 text-sm',
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted'
+                  )}
+                >
+                  {msg.content}
+                </div>
+                {msg.role === 'user' && (
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                    <User className="h-3.5 w-3.5 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={transcriptEndRef} />
+          </div>
+        </div>
+      )}
+
       {/* Instructions */}
-      {!isConnected && !error && isConfigured && (
+      {!isConnected && !error && isConfigured && transcript.length === 0 && (
         <p className="text-xs text-muted-foreground text-center max-w-[200px]">
           {language === 'es'
             ? 'Presiona el boton para hablar con el asistente'
