@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import { useConversation } from '@elevenlabs/react';
-import { Mic, MicOff, Phone, PhoneOff, Volume2, VolumeX, Loader2 } from 'lucide-react';
+import { Mic, MicOff, Phone, PhoneOff, Volume2, VolumeX, Loader2, Bot, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { MenuItemCard, MenuItemDisplay } from './MenuItemCard';
 
 interface VoiceAgentProps {
   restaurantId: string;
@@ -14,6 +16,20 @@ interface VoiceAgentProps {
   onOrderUpdate?: (action: string, item: any) => void;
   className?: string;
 }
+
+interface TranscriptMessage {
+  id: string;
+  role: 'user' | 'agent';
+  content: string;
+  timestamp: Date;
+}
+
+const PAGE_ROUTES: Record<string, string> = {
+  menu: '/menu',
+  order: '/orders',
+  checkout: '/checkout',
+  assistance: '/menu',
+};
 
 const STATUS_TEXT = {
   en: {
@@ -42,11 +58,18 @@ export function VoiceAgent({
   onOrderUpdate,
   className,
 }: VoiceAgentProps) {
+  const router = useRouter();
   const [signedUrl, setSignedUrl] = useState<string | null>(null);
   const [isLoadingUrl, setIsLoadingUrl] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isConfigured, setIsConfigured] = useState(true);
+  const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
+  const transcriptEndRef = useRef<HTMLDivElement>(null);
+  const [menuItems, setMenuItems] = useState<Map<string, MenuItemDisplay>>(new Map());
+  const [displayedItems, setDisplayedItems] = useState<MenuItemDisplay[]>([]);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
+  const conversationRef = useRef<ReturnType<typeof useConversation> | null>(null);
 
   // Client tools for the voice agent to trigger UI updates
   const clientTools: Record<string, (parameters: any) => Promise<string>> = {
@@ -57,14 +80,35 @@ export function VoiceAgent({
       return 'Order updated successfully';
     },
     show_menu_item: async ({ itemId }: { itemId: string }): Promise<string> => {
-      // Trigger navigation or modal to show item
       console.log('Show menu item:', itemId);
-      return 'Showing menu item';
+      const item = menuItems.get(itemId);
+      if (item) {
+        setDisplayedItems((prev) => {
+          if (prev.some((i) => i.id === item.id)) return prev;
+          return [...prev, item];
+        });
+        return `Showing ${item.name} on screen`;
+      }
+      return 'Item not found in menu';
+    },
+    show_menu: async (): Promise<string> => {
+      const allItems = Array.from(menuItems.values());
+      if (allItems.length > 0) {
+        setDisplayedItems(allItems);
+        return `Showing ${allItems.length} menu items on screen`;
+      }
+      return 'Menu not loaded yet';
     },
     navigate_to: async ({ page }: { page: string }): Promise<string> => {
-      // Trigger navigation
       console.log('Navigate to:', page);
-      return 'Navigating to ' + page;
+      const route = PAGE_ROUTES[page];
+      if (route) {
+        setTimeout(() => {
+          router.push(route);
+        }, 1500);
+        return 'Navigating to ' + page;
+      }
+      return 'Unknown page: ' + page;
     },
   };
 
@@ -77,14 +121,75 @@ export function VoiceAgent({
     onDisconnect: () => {
       console.log('Voice agent disconnected');
     },
-    onMessage: (message) => {
+    onMessage: (message: any) => {
       console.log('Voice message:', message);
+      if (message.message) {
+        const role = message.role === 'user' ? 'user' : 'agent';
+        setTranscript((prev) => [
+          ...prev,
+          {
+            id: `${role}-${Date.now()}-${Math.random()}`,
+            role,
+            content: message.message,
+            timestamp: new Date(),
+          },
+        ]);
+
+        // Auto-show menu when agent talks about menu items
+        if (role === 'agent') {
+          const text = message.message.toLowerCase();
+          const menuKeywords = [
+            'menu', 'menú', 'platos', 'dishes', 'carta',
+            'tenemos', 'ofrecemos', 'opciones', 'categoría',
+            'entradas', 'starters', 'principales', 'main',
+            'postres', 'desserts', 'bebidas', 'beverages', 'drinks',
+          ];
+          const mentionsMenu = menuKeywords.some((kw) => text.includes(kw));
+          if (mentionsMenu && menuItems.size > 0 && displayedItems.length === 0) {
+            setDisplayedItems(Array.from(menuItems.values()));
+          }
+
+          // Auto-detect checkout/payment intent and trigger redirect
+          const checkoutKeywords = [
+            'proceed to checkout', 'proceder al pago', 'pagar', 'payment',
+            'checkout', 'complete your order', 'completar tu pedido',
+            'finalizar', 'confirmar pedido', 'confirm your order',
+            'te redirijo', 'redirect', 'proceso de pago',
+            'listo para pagar', 'ready to pay',
+          ];
+          const mentionsCheckout = checkoutKeywords.some((kw) => text.includes(kw));
+          if (mentionsCheckout) {
+            console.log('Checkout detected, will end session and redirect');
+            setPendingCheckout(true);
+          }
+        }
+      }
     },
     onError: (error) => {
       console.error('Voice agent error:', error);
       setError(typeof error === 'string' ? error : 'Connection error');
     },
   });
+
+  // Keep ref in sync so useEffect can access current conversation
+  conversationRef.current = conversation;
+
+  // Handle checkout: end session and redirect
+  useEffect(() => {
+    if (!pendingCheckout) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('Ending voice session for checkout...');
+        await conversationRef.current?.endSession();
+      } catch (err) {
+        console.error('Error ending session for checkout:', err);
+      }
+      router.push('/checkout');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [pendingCheckout, router]);
 
   const fetchSignedUrl = useCallback(async () => {
     setIsLoadingUrl(true);
@@ -130,7 +235,18 @@ export function VoiceAgent({
 
     if (url) {
       try {
-        await conversation.startSession({ signedUrl: url });
+        setTranscript([]);
+        setDisplayedItems([]);
+        setPendingCheckout(false);
+        await conversation.startSession({
+          signedUrl: url,
+          dynamicVariables: {
+            session_id: sessionId,
+            restaurant_id: restaurantId,
+            table_id: tableId,
+            language: language,
+          },
+        });
       } catch (err: any) {
         setError(err.message || 'Failed to start conversation');
         // Try to get a new signed URL on next attempt
@@ -160,6 +276,33 @@ export function VoiceAgent({
     // Note: ElevenLabs SDK may have its own mute functionality
   }, []);
 
+  // Fetch menu items on mount for displaying images
+  useEffect(() => {
+    async function fetchMenu() {
+      try {
+        const response = await fetch(`/api/menu?restaurantId=${restaurantId}&availableOnly=true`);
+        if (response.ok) {
+          const data = await response.json();
+          const itemMap = new Map<string, MenuItemDisplay>();
+          for (const item of data.items) {
+            itemMap.set(item.id, {
+              id: item.id,
+              name: item.name[language] || item.name.en,
+              description: item.description[language] || item.description.en,
+              price: item.price,
+              imageUrl: item.imageUrl,
+              dietaryFlags: item.dietaryFlags,
+            });
+          }
+          setMenuItems(itemMap);
+        }
+      } catch (err) {
+        console.error('Failed to fetch menu for voice display:', err);
+      }
+    }
+    fetchMenu();
+  }, [restaurantId, language]);
+
   // Check if ElevenLabs is configured on mount
   useEffect(() => {
     const checkConfiguration = async () => {
@@ -183,6 +326,11 @@ export function VoiceAgent({
 
     checkConfiguration();
   }, [restaurantId, tableId, sessionId, language]);
+
+  // Auto-scroll transcript
+  useEffect(() => {
+    transcriptEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [transcript]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -301,8 +449,75 @@ export function VoiceAgent({
         </div>
       )}
 
+      {/* Menu Items Display */}
+      {displayedItems.length > 0 && (
+        <div className="w-full max-w-md max-h-80 overflow-y-auto border rounded-lg p-3 bg-background">
+          <div className="flex items-center justify-between mb-2 sticky top-0 bg-background pb-1">
+            <p className="text-xs text-muted-foreground font-medium">
+              {language === 'es' ? `Menu (${displayedItems.length} items)` : `Menu (${displayedItems.length} items)`}
+            </p>
+            <button
+              onClick={() => setDisplayedItems([])}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              ✕
+            </button>
+          </div>
+          <div className="space-y-2">
+            {displayedItems.map((item) => (
+              <MenuItemCard
+                key={item.id}
+                item={item}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Conversation Transcript */}
+      {transcript.length > 0 && (
+        <div className="w-full max-w-md max-h-64 overflow-y-auto border rounded-lg p-3 bg-background">
+          <p className="text-xs text-muted-foreground mb-2 font-medium">
+            {language === 'es' ? 'Conversacion' : 'Conversation'}
+          </p>
+          <div className="space-y-3">
+            {transcript.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  'flex gap-2',
+                  msg.role === 'user' ? 'justify-end' : 'justify-start'
+                )}
+              >
+                {msg.role === 'agent' && (
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
+                    <Bot className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    'max-w-[80%] rounded-lg px-3 py-1.5 text-sm',
+                    msg.role === 'user'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'bg-muted'
+                  )}
+                >
+                  {msg.content}
+                </div>
+                {msg.role === 'user' && (
+                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary flex items-center justify-center">
+                    <User className="h-3.5 w-3.5 text-primary-foreground" />
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={transcriptEndRef} />
+          </div>
+        </div>
+      )}
+
       {/* Instructions */}
-      {!isConnected && !error && isConfigured && (
+      {!isConnected && !error && isConfigured && transcript.length === 0 && (
         <p className="text-xs text-muted-foreground text-center max-w-[200px]">
           {language === 'es'
             ? 'Presiona el boton para hablar con el asistente'

@@ -234,24 +234,28 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       id: 'starters',
       name: { en: 'Starters', es: 'Entradas' },
       description: { en: 'Begin your meal', es: 'Comienza tu comida' },
+      imageUrl: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&h=300&fit=crop',
       sortOrder: 1,
     },
     {
       id: 'mains',
       name: { en: 'Main Courses', es: 'Platos Principales' },
       description: { en: 'Our signature dishes', es: 'Nuestros platos insignia' },
+      imageUrl: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&h=300&fit=crop',
       sortOrder: 2,
     },
     {
       id: 'desserts',
       name: { en: 'Desserts', es: 'Postres' },
       description: { en: 'Sweet endings', es: 'Dulces finales' },
+      imageUrl: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=400&h=300&fit=crop',
       sortOrder: 3,
     },
     {
       id: 'drinks',
       name: { en: 'Beverages', es: 'Bebidas' },
       description: { en: 'Refresh yourself', es: 'Refrescate' },
+      imageUrl: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=400&h=300&fit=crop',
       sortOrder: 4,
     },
   ];
@@ -269,6 +273,7 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       dietaryFlags: ['vegetarian'],
       preparationTime: 10,
       ingredients: ['romaine lettuce', 'parmesan', 'croutons', 'caesar dressing'],
+      imageUrl: 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400&h=300&fit=crop',
       sortOrder: 1,
     },
     {
@@ -283,6 +288,7 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       dietaryFlags: ['vegetarian', 'vegan', 'gluten-free'],
       preparationTime: 5,
       ingredients: ['tomatoes', 'basil', 'garlic', 'olive oil'],
+      imageUrl: 'https://images.unsplash.com/photo-1547592166-23ac45744aec?w=400&h=300&fit=crop',
       sortOrder: 2,
     },
     {
@@ -297,6 +303,7 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       dietaryFlags: ['gluten-free'],
       preparationTime: 20,
       ingredients: ['salmon', 'lemon', 'butter', 'seasonal vegetables'],
+      imageUrl: 'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400&h=300&fit=crop',
       sortOrder: 1,
     },
     {
@@ -311,6 +318,7 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       dietaryFlags: ['vegetarian'],
       preparationTime: 15,
       ingredients: ['pasta', 'zucchini', 'peppers', 'garlic', 'parmesan'],
+      imageUrl: 'https://images.unsplash.com/photo-1473093295043-cdd812d0e601?w=400&h=300&fit=crop',
       sortOrder: 2,
     },
     {
@@ -325,6 +333,7 @@ export async function seedDemoMenu(restaurantId: string): Promise<void> {
       dietaryFlags: ['gluten-free'],
       preparationTime: 25,
       ingredients: ['ribeye', 'potatoes', 'garlic', 'butter', 'herbs'],
+      imageUrl: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=400&h=300&fit=crop',
       sortOrder: 3,
     },
     {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Plus,
   Search,
@@ -41,19 +41,41 @@ import {
   Wheat,
   GripVertical,
   ImagePlus,
+  Loader2,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Demo categories
-const DEMO_CATEGORIES = [
-  { id: 'starters', name: { en: 'Starters', es: 'Entradas' }, order: 1 },
-  { id: 'mains', name: { en: 'Main Courses', es: 'Platos Principales' }, order: 2 },
-  { id: 'desserts', name: { en: 'Desserts', es: 'Postres' }, order: 3 },
-  { id: 'drinks', name: { en: 'Drinks', es: 'Bebidas' }, order: 4 },
+interface AdminMenuItem {
+  id: string;
+  categoryId: string;
+  name: { en: string; es: string };
+  description: { en: string; es: string };
+  price: number;
+  imageUrl: string | null;
+  dietaryFlags: string[];
+  preparationTime: number;
+  availability: {
+    isAvailable: boolean;
+    stockCount: number | null;
+  };
+}
+
+interface AdminCategory {
+  id: string;
+  name: { en: string; es: string };
+  sortOrder: number;
+}
+
+// Fallback demo data when API is unavailable
+const DEMO_CATEGORIES: AdminCategory[] = [
+  { id: 'starters', name: { en: 'Starters', es: 'Entradas' }, sortOrder: 1 },
+  { id: 'mains', name: { en: 'Main Courses', es: 'Platos Principales' }, sortOrder: 2 },
+  { id: 'desserts', name: { en: 'Desserts', es: 'Postres' }, sortOrder: 3 },
+  { id: 'drinks', name: { en: 'Drinks', es: 'Bebidas' }, sortOrder: 4 },
 ];
 
-// Demo menu items
-const DEMO_ITEMS = [
+const DEMO_ITEMS: AdminMenuItem[] = [
   {
     id: '1',
     categoryId: 'starters',
@@ -63,11 +85,10 @@ const DEMO_ITEMS = [
       es: 'Lechuga romana fresca con parmesano y crutones',
     },
     price: 12.99,
-    isVegetarian: true,
-    isVegan: false,
-    isGlutenFree: false,
-    prepTime: 10,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['vegetarian'],
+    preparationTime: 10,
+    availability: { isAvailable: true, stockCount: null },
   },
   {
     id: '2',
@@ -78,11 +99,10 @@ const DEMO_ITEMS = [
       es: 'Sopa de tomate casera con albahaca fresca',
     },
     price: 8.99,
-    isVegetarian: true,
-    isVegan: true,
-    isGlutenFree: true,
-    prepTime: 5,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['vegetarian', 'vegan', 'gluten-free'],
+    preparationTime: 5,
+    availability: { isAvailable: true, stockCount: null },
   },
   {
     id: '3',
@@ -93,11 +113,10 @@ const DEMO_ITEMS = [
       es: 'Salmon del Atlantico con salsa de limon',
     },
     price: 24.99,
-    isVegetarian: false,
-    isVegan: false,
-    isGlutenFree: true,
-    prepTime: 20,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['gluten-free'],
+    preparationTime: 20,
+    availability: { isAvailable: true, stockCount: null },
   },
   {
     id: '4',
@@ -108,11 +127,10 @@ const DEMO_ITEMS = [
       es: 'Pasta fresca con vegetales de temporada',
     },
     price: 18.99,
-    isVegetarian: true,
-    isVegan: false,
-    isGlutenFree: false,
-    prepTime: 15,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['vegetarian'],
+    preparationTime: 15,
+    availability: { isAvailable: true, stockCount: null },
   },
   {
     id: '5',
@@ -123,11 +141,10 @@ const DEMO_ITEMS = [
       es: 'Pastel de chocolate con helado de vainilla',
     },
     price: 9.99,
-    isVegetarian: true,
-    isVegan: false,
-    isGlutenFree: false,
-    prepTime: 5,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['vegetarian'],
+    preparationTime: 5,
+    availability: { isAvailable: true, stockCount: null },
   },
   {
     id: '6',
@@ -138,26 +155,75 @@ const DEMO_ITEMS = [
       es: 'Limonada recien exprimida con menta',
     },
     price: 4.99,
-    isVegetarian: true,
-    isVegan: true,
-    isGlutenFree: true,
-    prepTime: 3,
-    available: true,
+    imageUrl: null,
+    dietaryFlags: ['vegan', 'gluten-free'],
+    preparationTime: 3,
+    availability: { isAvailable: true, stockCount: null },
   },
 ];
-
-type MenuItem = typeof DEMO_ITEMS[0];
-type Category = typeof DEMO_CATEGORIES[0];
 
 export default function MenuManagementPage() {
   const t = useTranslations();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('all');
-  const [items, setItems] = useState(DEMO_ITEMS);
-  const [categories, setCategories] = useState(DEMO_CATEGORIES);
+  const [items, setItems] = useState<AdminMenuItem[]>(DEMO_ITEMS);
+  const [categories, setCategories] = useState<AdminCategory[]>(DEMO_CATEGORIES);
   const [isAddItemOpen, setIsAddItemOpen] = useState(false);
   const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [editingItem, setEditingItem] = useState<AdminMenuItem | null>(null);
+  const [uploadingItemId, setUploadingItemId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const selectedItemIdRef = useRef<string | null>(null);
+
+  const restaurantId = 'demo_restaurant';
+  const locale = 'es';
+
+  // Fetch menu data from API
+  useEffect(() => {
+    async function fetchMenu() {
+      try {
+        const response = await fetch(
+          `/api/menu?restaurantId=${restaurantId}&availableOnly=false`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.categories?.length > 0) {
+            setCategories(
+              data.categories.map((c: any) => ({
+                id: c.id,
+                name: c.name,
+                sortOrder: c.sortOrder,
+              }))
+            );
+          }
+          if (data.items?.length > 0) {
+            setItems(
+              data.items.map((item: any) => ({
+                id: item.id,
+                categoryId: item.categoryId,
+                name: item.name,
+                description: item.description,
+                price: item.price,
+                imageUrl: item.imageUrl || null,
+                dietaryFlags: item.dietaryFlags || [],
+                preparationTime: item.preparationTime || 10,
+                availability: item.availability || {
+                  isAvailable: true,
+                  stockCount: null,
+                },
+              }))
+            );
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching menu, using demo data:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchMenu();
+  }, []);
 
   // Form states
   const [newItem, setNewItem] = useState({
@@ -176,8 +242,6 @@ export default function MenuManagementPage() {
     name: { en: '', es: '' },
   });
 
-  const locale = 'es'; // Default to Spanish for admin
-
   const filteredItems = items.filter((item) => {
     const matchesSearch =
       item.name[locale].toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -189,17 +253,21 @@ export default function MenuManagementPage() {
 
   const handleAddItem = () => {
     const id = Date.now().toString();
-    const item: MenuItem = {
+    const dietaryFlags: string[] = [];
+    if (newItem.isVegetarian) dietaryFlags.push('vegetarian');
+    if (newItem.isVegan) dietaryFlags.push('vegan');
+    if (newItem.isGlutenFree) dietaryFlags.push('gluten-free');
+
+    const item: AdminMenuItem = {
       id,
       categoryId: newItem.categoryId,
       name: newItem.name,
       description: newItem.description,
       price: parseFloat(newItem.price) || 0,
-      prepTime: parseInt(newItem.prepTime) || 10,
-      isVegetarian: newItem.isVegetarian,
-      isVegan: newItem.isVegan,
-      isGlutenFree: newItem.isGlutenFree,
-      available: newItem.available,
+      imageUrl: null,
+      dietaryFlags,
+      preparationTime: parseInt(newItem.prepTime) || 10,
+      availability: { isAvailable: newItem.available, stockCount: null },
     };
     setItems([...items, item]);
     setIsAddItemOpen(false);
@@ -219,21 +287,31 @@ export default function MenuManagementPage() {
 
   const handleAddCategory = () => {
     const id = newCategory.name.en.toLowerCase().replace(/\s+/g, '-');
-    const category: Category = {
+    const category: AdminCategory = {
       id,
       name: newCategory.name,
-      order: categories.length + 1,
+      sortOrder: categories.length + 1,
     };
     setCategories([...categories, category]);
     setIsAddCategoryOpen(false);
     setNewCategory({ name: { en: '', es: '' } });
-    toast.success('Categoría agregada exitosamente');
+    toast.success('Categoria agregada exitosamente');
   };
 
   const handleToggleAvailability = (itemId: string) => {
-    setItems(items.map((item) =>
-      item.id === itemId ? { ...item, available: !item.available } : item
-    ));
+    setItems(
+      items.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              availability: {
+                ...item.availability,
+                isAvailable: !item.availability.isAvailable,
+              },
+            }
+          : item
+      )
+    );
     toast.success('Disponibilidad actualizada');
   };
 
@@ -242,14 +320,119 @@ export default function MenuManagementPage() {
     toast.success('Item eliminado');
   };
 
+  const handleImageClick = (itemId: string) => {
+    selectedItemIdRef.current = itemId;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    const itemId = selectedItemIdRef.current;
+
+    if (!file || !itemId) return;
+
+    // Reset input so the same file can be selected again
+    e.target.value = '';
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Formato no soportado. Usa JPEG, PNG, WebP o AVIF.');
+      return;
+    }
+
+    // Validate file size (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('La imagen es muy grande. Maximo 5MB.');
+      return;
+    }
+
+    setUploadingItemId(itemId);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('itemId', itemId);
+      formData.append('restaurantId', restaurantId);
+
+      const response = await fetch('/api/menu/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Error al subir la imagen');
+      }
+
+      const { imageUrl } = await response.json();
+
+      // Update the item in local state
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, imageUrl } : item
+        )
+      );
+
+      toast.success('Imagen actualizada exitosamente');
+    } catch (err: any) {
+      console.error('Upload error:', err);
+      toast.error(err.message || 'Error al subir la imagen');
+    } finally {
+      setUploadingItemId(null);
+      selectedItemIdRef.current = null;
+    }
+  };
+
+  const handleRemoveImage = async (itemId: string) => {
+    try {
+      const response = await fetch('/api/menu/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ itemId, restaurantId, removeImage: true }),
+      });
+
+      // Even if the API fails, remove locally
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, imageUrl: null } : item
+        )
+      );
+      toast.success('Imagen eliminada');
+    } catch {
+      setItems((prev) =>
+        prev.map((item) =>
+          item.id === itemId ? { ...item, imageUrl: null } : item
+        )
+      );
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6">
+      {/* Hidden file input for image upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/avif"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">{t('admin.menuManagement')}</h1>
           <p className="text-muted-foreground">
-            Gestiona las categorías y artículos del menú
+            Gestiona las categorias y articulos del menu
           </p>
         </div>
         <div className="flex gap-2">
@@ -257,19 +440,19 @@ export default function MenuManagementPage() {
             <DialogTrigger asChild>
               <Button variant="outline">
                 <Plus className="h-4 w-4 mr-2" />
-                Categoría
+                Categoria
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Nueva Categoría</DialogTitle>
+                <DialogTitle>Nueva Categoria</DialogTitle>
                 <DialogDescription>
-                  Agrega una nueva categoría al menú
+                  Agrega una nueva categoria al menu
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="space-y-2">
-                  <Label>Nombre (Inglés)</Label>
+                  <Label>Nombre (Ingles)</Label>
                   <Input
                     value={newCategory.name.en}
                     onChange={(e) =>
@@ -282,7 +465,7 @@ export default function MenuManagementPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Nombre (Español)</Label>
+                  <Label>Nombre (Espanol)</Label>
                   <Input
                     value={newCategory.name.es}
                     onChange={(e) =>
@@ -291,7 +474,7 @@ export default function MenuManagementPage() {
                         name: { ...newCategory.name, es: e.target.value },
                       })
                     }
-                    placeholder="Nombre de categoría"
+                    placeholder="Nombre de categoria"
                   />
                 </div>
               </div>
@@ -313,15 +496,15 @@ export default function MenuManagementPage() {
             </DialogTrigger>
             <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Nuevo Item del Menú</DialogTitle>
+                <DialogTitle>Nuevo Item del Menu</DialogTitle>
                 <DialogDescription>
-                  Agrega un nuevo artículo al menú
+                  Agrega un nuevo articulo al menu
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Nombre (Inglés)</Label>
+                    <Label>Nombre (Ingles)</Label>
                     <Input
                       value={newItem.name.en}
                       onChange={(e) =>
@@ -334,7 +517,7 @@ export default function MenuManagementPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Nombre (Español)</Label>
+                    <Label>Nombre (Espanol)</Label>
                     <Input
                       value={newItem.name.es}
                       onChange={(e) =>
@@ -350,7 +533,7 @@ export default function MenuManagementPage() {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Descripción (Inglés)</Label>
+                    <Label>Descripcion (Ingles)</Label>
                     <Textarea
                       value={newItem.description.en}
                       onChange={(e) =>
@@ -363,7 +546,7 @@ export default function MenuManagementPage() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Descripción (Español)</Label>
+                    <Label>Descripcion (Espanol)</Label>
                     <Textarea
                       value={newItem.description.es}
                       onChange={(e) =>
@@ -372,14 +555,14 @@ export default function MenuManagementPage() {
                           description: { ...newItem.description, es: e.target.value },
                         })
                       }
-                      placeholder="Descripción"
+                      placeholder="Descripcion"
                     />
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
-                    <Label>Categoría</Label>
+                    <Label>Categoria</Label>
                     <Select
                       value={newItem.categoryId}
                       onValueChange={(value) =>
@@ -424,7 +607,7 @@ export default function MenuManagementPage() {
                 </div>
 
                 <div className="space-y-4">
-                  <Label>Opciones Dietéticas</Label>
+                  <Label>Opciones Dieteticas</Label>
                   <div className="flex flex-wrap gap-4">
                     <div className="flex items-center gap-2">
                       <Switch
@@ -505,7 +688,7 @@ export default function MenuManagementPage() {
         <CardHeader>
           <CardTitle>{t('admin.items')}</CardTitle>
           <CardDescription>
-            {filteredItems.length} items en el menú
+            {filteredItems.length} items en el menu
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -517,13 +700,57 @@ export default function MenuManagementPage() {
               >
                 <div className="flex items-center gap-4">
                   <GripVertical className="h-5 w-5 text-muted-foreground cursor-grab" />
-                  <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
-                    🍽️
+
+                  {/* Clickable image area */}
+                  <div className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => handleImageClick(item.id)}
+                      disabled={uploadingItemId === item.id}
+                      className="w-16 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden border-2 border-transparent hover:border-primary/50 transition-colors cursor-pointer disabled:cursor-wait"
+                      title="Cambiar imagen"
+                    >
+                      {uploadingItemId === item.id ? (
+                        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                      ) : item.imageUrl ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name[locale]}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex flex-col items-center gap-0.5">
+                          <ImagePlus className="h-5 w-5 text-muted-foreground" />
+                          <span className="text-[10px] text-muted-foreground">Imagen</span>
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Overlay on hover when image exists */}
+                    {item.imageUrl && uploadingItemId !== item.id && (
+                      <>
+                        <div className="absolute inset-0 bg-black/50 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <ImagePlus className="h-5 w-5 text-white" />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveImage(item.id);
+                          }}
+                          className="absolute -top-1.5 -right-1.5 bg-destructive text-destructive-foreground rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/90"
+                          title="Eliminar imagen"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </>
+                    )}
                   </div>
+
                   <div>
                     <div className="flex items-center gap-2">
                       <h3 className="font-medium">{item.name[locale]}</h3>
-                      {!item.available && (
+                      {!item.availability.isAvailable && (
                         <Badge variant="secondary" className="text-xs">
                           No disponible
                         </Badge>
@@ -533,13 +760,13 @@ export default function MenuManagementPage() {
                       {item.description[locale]}
                     </p>
                     <div className="flex gap-1 mt-1">
-                      {item.isVegetarian && (
+                      {item.dietaryFlags.includes('vegetarian') && (
                         <Badge variant="outline" className="text-xs">
                           <Leaf className="h-3 w-3 mr-1" />
                           Veg
                         </Badge>
                       )}
-                      {item.isGlutenFree && (
+                      {item.dietaryFlags.includes('gluten-free') && (
                         <Badge variant="outline" className="text-xs">
                           <Wheat className="h-3 w-3 mr-1" />
                           GF
@@ -553,12 +780,12 @@ export default function MenuManagementPage() {
                   <div className="text-right">
                     <p className="font-bold">${item.price.toFixed(2)}</p>
                     <p className="text-xs text-muted-foreground">
-                      {item.prepTime} min
+                      {item.preparationTime} min
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Switch
-                      checked={item.available}
+                      checked={item.availability.isAvailable}
                       onCheckedChange={() => handleToggleAvailability(item.id)}
                     />
                     <Button variant="ghost" size="icon">
@@ -590,7 +817,7 @@ export default function MenuManagementPage() {
         <CardHeader>
           <CardTitle>{t('admin.categories')}</CardTitle>
           <CardDescription>
-            Gestiona las categorías del menú
+            Gestiona las categorias del menu
           </CardDescription>
         </CardHeader>
         <CardContent>

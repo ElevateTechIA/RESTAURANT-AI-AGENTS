@@ -48,6 +48,7 @@ function convertToAIMenuItems(items: MenuItem[]): AIMenuItem[] {
     dietaryFlags: item.dietaryFlags,
     preparationTime: item.preparationTime,
     availability: item.availability,
+    imageUrl: item.imageUrl || null,
   }));
 }
 

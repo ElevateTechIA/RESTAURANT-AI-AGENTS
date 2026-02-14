@@ -10,6 +10,7 @@ export interface AIMenuItem {
   dietaryFlags: string[];
   preparationTime: number;
   availability: { isAvailable: boolean };
+  imageUrl: string | null;
 }
 
 // Initialize the Gemini client
@@ -185,6 +186,13 @@ You are an AI waitress assistant for ${context.restaurantName}. ${languageInstru
 6. Upsell naturally without being pushy (suggest drinks, sides, desserts)
 7. Request human assistance when needed (complex issues, complaints, special requests you can't handle)
 
+## IMPORTANT - Image Display Rules:
+- When showing menu items, include the item image using markdown: ![Item Name](imageUrl)
+- Only include images when the imageUrl is provided (not null or empty)
+- Place each image on its own line, right before the item name and details
+- When listing the FULL menu, show images only for the first 2-3 items per category to keep the response concise
+- When recommending specific items or when the customer asks about a specific dish, ALWAYS show its image
+
 ## Menu Items Available (${availableItems.length} items):
 ${availableItems
   .map(
@@ -195,7 +203,7 @@ ITEM: ${item.name[context.language]} / ${item.name[context.language === 'es' ? '
 - Description: ${item.description[context.language]}
 - Allergens: ${item.allergens.join(', ') || 'None'}
 - Dietary: ${item.dietaryFlags.join(', ') || 'None'}
-- Prep time: ${item.preparationTime} min
+- Prep time: ${item.preparationTime} min${item.imageUrl ? `\n- Image: ${item.imageUrl}` : ''}
 `
   )
   .join('\n')}

@@ -350,7 +350,7 @@ export function AIChat({
                   'max-w-[80%] rounded-lg px-4 py-2',
                   message.role === 'user'
                     ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
+                    : 'bg-muted text-foreground'
                 )}
               >
                 {message.isLoading ? (
@@ -360,9 +360,29 @@ export function AIChat({
                       {language === 'es' ? 'Pensando...' : 'Thinking...'}
                     </span>
                   </div>
+                ) : message.role === 'user' ? (
+                  <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                 ) : (
-                  <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0">
-                    <ReactMarkdown>{message.content}</ReactMarkdown>
+                  <div className="text-sm prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-ul:my-1 prose-li:my-0 [&_p]:text-foreground [&_li]:text-foreground [&_strong]:text-foreground">
+                    <ReactMarkdown
+                      components={{
+                        img: ({ src, alt, ...props }) => (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={src}
+                            alt={alt || ''}
+                            className="rounded-lg max-w-[180px] w-full h-auto my-2 shadow-sm border bg-muted"
+                            loading="lazy"
+                            decoding="async"
+                            width={180}
+                            height={135}
+                            {...props}
+                          />
+                        ),
+                      }}
+                    >
+                      {message.content}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
