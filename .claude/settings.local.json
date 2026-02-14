@@ -9,7 +9,9 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(printf:*)",
-      "WebFetch(domain:vercel.com)"
+      "WebFetch(domain:vercel.com)",
+      "Bash(git checkout:*)",
+      "Bash(git merge AI-001 --no-ff -m \"$\\(cat <<''EOF''\nMerge branch ''AI-001'': Voice/chat AI enhancements\n\n- Menu item images in text and voice chat\n- Voice transcript with real-time chat bubbles\n- Auto hang-up and checkout redirect on payment intent\n- Firestore order persistence for ElevenLabs webhook\n- Image loading optimization and chat contrast fixes\n- Admin menu image upload functionality\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }
