@@ -70,6 +70,15 @@ export function VoiceAgent({
   const [displayedItems, setDisplayedItems] = useState<MenuItemDisplay[]>([]);
   const [pendingCheckout, setPendingCheckout] = useState(false);
   const conversationRef = useRef<ReturnType<typeof useConversation> | null>(null);
+  const dialInAudioRef = useRef<HTMLAudioElement | null>(null);
+  const dialHungUpAudioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Initialize audio elements for dial sounds
+  useEffect(() => {
+    dialInAudioRef.current = new Audio('/dial_in.wav');
+    dialHungUpAudioRef.current = new Audio('/dial_hung_up.wav');
+    dialInAudioRef.current.loop = true;
+  }, []);
 
   // Client tools for the voice agent to trigger UI updates
   const clientTools: Record<string, (parameters: any) => Promise<string>> = {
@@ -116,9 +125,16 @@ export function VoiceAgent({
     clientTools,
     onConnect: () => {
       setError(null);
+      // Stop dial-in sound once connected
+      if (dialInAudioRef.current) {
+        dialInAudioRef.current.pause();
+        dialInAudioRef.current.currentTime = 0;
+      }
       console.log('Voice agent connected');
     },
     onDisconnect: () => {
+      // Play hang-up sound
+      dialHungUpAudioRef.current?.play().catch(() => {});
       console.log('Voice agent disconnected');
     },
     onMessage: (message: any) => {
@@ -238,6 +254,8 @@ export function VoiceAgent({
         setTranscript([]);
         setDisplayedItems([]);
         setPendingCheckout(false);
+        // Play dial-in sound while connecting
+        dialInAudioRef.current?.play().catch(() => {});
         await conversation.startSession({
           signedUrl: url,
           dynamicVariables: {
@@ -248,6 +266,11 @@ export function VoiceAgent({
           },
         });
       } catch (err: any) {
+        // Stop dial-in sound on failure
+        if (dialInAudioRef.current) {
+          dialInAudioRef.current.pause();
+          dialInAudioRef.current.currentTime = 0;
+        }
         setError(err.message || 'Failed to start conversation');
         // Try to get a new signed URL on next attempt
         setSignedUrl(null);
