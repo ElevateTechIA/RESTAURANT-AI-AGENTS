@@ -19,7 +19,13 @@ export async function POST(request: NextRequest) {
     const body = await request.text();
     const payload = JSON.parse(body);
 
-    const { tool_name, parameters, conversation_id, agent_id } = payload;
+    // Log full payload to debug field names
+    console.log(`[ElevenLabs Webhook] Full payload:`, JSON.stringify(payload));
+
+    // ElevenLabs may send tool_name or name depending on the version
+    const tool_name = payload.tool_name || payload.name || payload.tool?.name;
+    const parameters = payload.parameters || payload.args || payload.tool?.parameters || {};
+    const conversation_id = payload.conversation_id;
 
     console.log(`[ElevenLabs Webhook] Tool: ${tool_name}, Params:`, JSON.stringify(parameters));
 
