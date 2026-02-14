@@ -68,6 +68,8 @@ export function VoiceAgent({
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const [menuItems, setMenuItems] = useState<Map<string, MenuItemDisplay>>(new Map());
   const [displayedItems, setDisplayedItems] = useState<MenuItemDisplay[]>([]);
+  const [pendingCheckout, setPendingCheckout] = useState(false);
+  const conversationRef = useRef<ReturnType<typeof useConversation> | null>(null);
 
   // Client tools for the voice agent to trigger UI updates
   const clientTools: Record<string, (parameters: any) => Promise<string>> = {
@@ -147,7 +149,7 @@ export function VoiceAgent({
             setDisplayedItems(Array.from(menuItems.values()));
           }
 
-          // Auto-detect checkout/payment intent and redirect
+          // Auto-detect checkout/payment intent and trigger redirect
           const checkoutKeywords = [
             'proceed to checkout', 'proceder al pago', 'pagar', 'payment',
             'checkout', 'complete your order', 'completar tu pedido',
@@ -157,14 +159,8 @@ export function VoiceAgent({
           ];
           const mentionsCheckout = checkoutKeywords.some((kw) => text.includes(kw));
           if (mentionsCheckout) {
-            setTimeout(async () => {
-              try {
-                await conversation.endSession();
-              } catch {
-                // ignore
-              }
-              router.push('/checkout');
-            }, 2000);
+            console.log('Checkout detected, will end session and redirect');
+            setPendingCheckout(true);
           }
         }
       }
@@ -174,6 +170,26 @@ export function VoiceAgent({
       setError(typeof error === 'string' ? error : 'Connection error');
     },
   });
+
+  // Keep ref in sync so useEffect can access current conversation
+  conversationRef.current = conversation;
+
+  // Handle checkout: end session and redirect
+  useEffect(() => {
+    if (!pendingCheckout) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        console.log('Ending voice session for checkout...');
+        await conversationRef.current?.endSession();
+      } catch (err) {
+        console.error('Error ending session for checkout:', err);
+      }
+      router.push('/checkout');
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [pendingCheckout, router]);
 
   const fetchSignedUrl = useCallback(async () => {
     setIsLoadingUrl(true);
@@ -221,7 +237,16 @@ export function VoiceAgent({
       try {
         setTranscript([]);
         setDisplayedItems([]);
-        await conversation.startSession({ signedUrl: url });
+        setPendingCheckout(false);
+        await conversation.startSession({
+          signedUrl: url,
+          dynamicVariables: {
+            session_id: sessionId,
+            restaurant_id: restaurantId,
+            table_id: tableId,
+            language: language,
+          },
+        });
       } catch (err: any) {
         setError(err.message || 'Failed to start conversation');
         // Try to get a new signed URL on next attempt

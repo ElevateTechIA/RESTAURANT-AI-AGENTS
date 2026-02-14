@@ -9,10 +9,23 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "firebase-admin",
     "@google-cloud/firestore",
+    "@google-cloud/storage",
     "@opentelemetry/api",
     "@opentelemetry/sdk-trace-base",
     "@opentelemetry/semantic-conventions",
   ],
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+      },
+      {
+        protocol: "https",
+        hostname: "firebasestorage.googleapis.com",
+      },
+    ],
+  },
 };
 
 export default withNextIntl(nextConfig);
