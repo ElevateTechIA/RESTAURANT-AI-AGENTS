@@ -67,7 +67,9 @@ export function VoiceAgent({
   const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
   const transcriptEndRef = useRef<HTMLDivElement>(null);
   const [menuItems, setMenuItems] = useState<Map<string, MenuItemDisplay>>(new Map());
+  const menuItemsRef = useRef<Map<string, MenuItemDisplay>>(new Map());
   const [displayedItems, setDisplayedItems] = useState<MenuItemDisplay[]>([]);
+  const displayedItemsRef = useRef<MenuItemDisplay[]>([]);
   const [pendingCheckout, setPendingCheckout] = useState(false);
   const conversationRef = useRef<ReturnType<typeof useConversation> | null>(null);
   const dialInAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -161,8 +163,10 @@ export function VoiceAgent({
             'postres', 'desserts', 'bebidas', 'beverages', 'drinks',
           ];
           const mentionsMenu = menuKeywords.some((kw) => text.includes(kw));
-          if (mentionsMenu && menuItems.size > 0 && displayedItems.length === 0) {
-            setDisplayedItems(Array.from(menuItems.values()));
+          if (mentionsMenu && menuItemsRef.current.size > 0 && displayedItemsRef.current.length === 0) {
+            const items = Array.from(menuItemsRef.current.values());
+            setDisplayedItems(items);
+            displayedItemsRef.current = items;
           }
 
           // Auto-detect checkout/payment intent and trigger redirect
@@ -187,8 +191,10 @@ export function VoiceAgent({
     },
   });
 
-  // Keep ref in sync so useEffect can access current conversation
+  // Keep refs in sync so callbacks avoid stale closures
   conversationRef.current = conversation;
+  menuItemsRef.current = menuItems;
+  displayedItemsRef.current = displayedItems;
 
   // Handle checkout: end session and redirect
   useEffect(() => {
@@ -253,6 +259,7 @@ export function VoiceAgent({
       try {
         setTranscript([]);
         setDisplayedItems([]);
+        displayedItemsRef.current = [];
         setPendingCheckout(false);
         // Play dial-in sound while connecting
         dialInAudioRef.current?.play().catch(() => {});
