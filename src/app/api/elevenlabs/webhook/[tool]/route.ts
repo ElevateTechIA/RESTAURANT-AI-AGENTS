@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMenuItems } from '@/lib/firebase/firestore';
+import { getMenuItems } from '@/lib/firebase/menu';
 import {
   getOrCreateChatSession,
   getChatSession,
@@ -94,11 +94,12 @@ async function handleGetMenu(params: { restaurantId?: string; categoryId?: strin
         imageUrl: item.imageUrl || null,
       })),
     };
-  } catch (error) {
+  } catch (error: any) {
+    console.error('[GetMenu] Error fetching menu:', error?.message || error);
     return {
-      success: true,
+      success: false,
       items: [],
-      message: 'Menu is currently loading',
+      message: 'Error loading menu: ' + (error?.message || 'Unknown error'),
     };
   }
 }

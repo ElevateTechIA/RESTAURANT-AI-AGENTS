@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMenuItems } from '@/lib/firebase/firestore';
+import { getMenuItems } from '@/lib/firebase/menu';
 import {
   getOrCreateChatSession,
   getChatSession,
